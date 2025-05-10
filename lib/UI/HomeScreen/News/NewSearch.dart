@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:news/Modal/SourceResponse.dart';
 import 'package:news/UI/HomeScreen/News/NewsDetails.dart';
 import 'package:news/UI/HomeScreen/News/NewsItem.dart';
 import 'package:news/api/api_manager/api_manager.dart';
@@ -7,20 +6,20 @@ import 'package:news/api/api_manager/api_manager.dart';
 import '../../../Utils/AppColors.dart';
 import '../../../Utils/AppStyle.dart';
 
-class NewsWidget extends StatefulWidget {
-  NewsWidget({required this.source});
+class NewSearch extends StatefulWidget {
+  NewSearch({required this.SearchString});
 
-  Source source;
+  String SearchString;
 
   @override
-  State<NewsWidget> createState() => _NewsWidgetState();
+  State<NewSearch> createState() => _NewSearchState();
 }
 
-class _NewsWidgetState extends State<NewsWidget> {
+class _NewSearchState extends State<NewSearch> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: ApiManager.getNewsBySourceId(widget.source.id ?? ''),
+        future: ApiManager.getSearchNews(widget.SearchString ?? ''),
         builder: (context, snapshot) {
           /// if it loading
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -38,7 +37,7 @@ class _NewsWidgetState extends State<NewsWidget> {
                 ),
                 ElevatedButton(
                     onPressed: () {
-                      ApiManager.getNewsBySourceId(widget.source.id ?? '');
+                      ApiManager.getSearchNews(widget.SearchString ?? '');
                       ;
                       setState(() {});
                     },
@@ -59,7 +58,7 @@ class _NewsWidgetState extends State<NewsWidget> {
                 ),
                 ElevatedButton(
                     onPressed: () {
-                      ApiManager.getNewsBySourceId(widget.source.id ?? '');
+                      ApiManager.getSearchNews(widget.SearchString ?? '');
                       setState(() {});
                     },
                     child: Text(

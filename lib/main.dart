@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'Providers/SettingProvider.dart';
 import 'UI/HomeScreen/HomeScreen.dart';
+import 'UI/HomeScreen/News/NewsDetails.dart';
 import 'Utils/AppTheme.dart';
 
 void main() async {
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         initialRoute: HomeScreen.routeName,
         routes: {
           HomeScreen.routeName: (context) => HomeScreen(),
+          NewsDetails.routeName: (context) => NewsDetails(),
         });
   }
 }

@@ -30,4 +30,16 @@ class ApiManager {
       throw e;
     }
   }
+
+  static Future<NewsResponse?> getSearchNews(String search) async {
+    Uri url = Uri.https(ApiConstants.baseUrl, EndPoints.newsApi,
+        {'apiKey': ApiConstants.apiKey, 'q': search});
+    try {
+      var response = await http.get(url);
+      // convert from body string to body json by use jsonDecode then convert to object by SourceResponse.fromJson
+      return NewsResponse.fromJson(jsonDecode(response.body));
+    } catch (e) {
+      throw e;
+    }
+  }
 }

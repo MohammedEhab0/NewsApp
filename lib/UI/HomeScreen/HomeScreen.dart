@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:news/Modal/Category.dart';
 import 'package:news/UI/HomeScreen/CategoryFragment.dart';
+import 'package:news/UI/HomeScreen/News/NewSearch.dart';
 import 'package:news/UI/HomeScreen/NewsDrawer.dart';
 
+import '../Widgets/CustomTextField.dart';
 import 'CategoryDetails/CategoryDetails.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,6 +18,22 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  TextEditingController? SearchController;
+  bool isSearching = false;
+  bool searchingResult = false;
+
+  @override
+  void initState() {
+    super.initState();
+    SearchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    SearchController?.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -36,7 +54,12 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Theme.of(context).primaryColor,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                isSearching = !isSearching;
+                searchingResult = false;
+              });
+            },
             icon: Icon(
               size: 30,
               Icons.search_outlined,
@@ -53,13 +76,43 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Padding(
           padding: EdgeInsets.symmetric(vertical: height * .02),
-          child: widget.selectedCategory == null
-              ? CategoryFragment(
-                  selectedCategory: newCategory,
-                )
-              : CategoryDetails(
-                  category: widget.selectedCategory!,
-                )),
+          child: Column(
+            children: [
+              isSearching == true
+                  ? Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: width * .05, vertical: height * .02),
+                      child: CustomTextField(
+                        controller: SearchController,
+                        hintText: "Search",
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              searchingResult = true;
+                            });
+                          },
+                          icon: Icon(
+                            size: 30,
+                            Icons.search_outlined,
+                            color: Theme.of(context).secondaryHeaderColor,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Container(),
+              searchingResult == true && SearchController != null
+                  ? Expanded(
+                      child: NewSearch(SearchString: SearchController!.text))
+                  : Expanded(
+                      child: widget.selectedCategory == null
+                          ? CategoryFragment(
+                              selectedCategory: newCategory,
+                            )
+                          : CategoryDetails(
+                              category: widget.selectedCategory!,
+                            ))
+            ],
+          )),
     );
   }
 
