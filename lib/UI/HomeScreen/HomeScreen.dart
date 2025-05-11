@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:news/Modal/Category.dart';
 import 'package:news/UI/HomeScreen/CategoryFragment.dart';
@@ -69,8 +70,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         title: Text(
           widget.selectedCategory == null
-              ? 'Home'
-              : widget.selectedCategory!.title,
+              ? 'home'.tr()
+              : widget.selectedCategory!.title.tr(),
           style: Theme.of(context).textTheme.labelLarge,
         ),
       ),
@@ -100,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )
                   : Container(),
-              searchingResult == true && SearchController != null
+              searchingResult == true && SearchController!.text.isNotEmpty
                   ? Expanded(
                       child: NewSearch(SearchString: SearchController!.text))
                   : Expanded(

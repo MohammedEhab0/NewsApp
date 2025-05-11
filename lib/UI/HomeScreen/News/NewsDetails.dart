@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:news/Utils/AppColors.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -37,7 +38,7 @@ class _NewsDetailsState extends State<NewsDetails> {
         backgroundColor: Theme.of(context).primaryColor,
         centerTitle: true,
         title: Text(
-          newsArgs.title ?? 'News Details',
+          newsArgs.title ?? 'News Details'.tr(),
           style: Theme.of(context).textTheme.labelLarge,
         ),
       ),
@@ -82,7 +83,7 @@ class _NewsDetailsState extends State<NewsDetails> {
               ),
               onPressed: () => _launchUrl(url),
               child: Text(
-                'View Full Article',
+                'View Full Article'.tr(),
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),

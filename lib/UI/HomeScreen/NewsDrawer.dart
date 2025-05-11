@@ -41,7 +41,7 @@ class _NewsDrawerState extends State<NewsDrawer> {
             color: Theme.of(context).primaryColor,
             child: Center(
                 child: Text(
-              'news App',
+              'newsApp'.tr(),
               style: Theme.of(context).textTheme.headlineLarge,
             )),
           ),

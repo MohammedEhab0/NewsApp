@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:news/Modal/Category.dart';
 
@@ -23,7 +24,7 @@ class _CategoryFragmentState extends State<CategoryFragment> {
       child: Column(
         children: [
           Text(
-            'Good Morning \n Here is Some News For You',
+            'Good Morning'.tr(),
             style: Theme.of(context).textTheme.headlineLarge,
           ),
           Expanded(
@@ -59,7 +60,7 @@ class _CategoryFragmentState extends State<CategoryFragment> {
                                       width: width * .02,
                                     ),
                                     Text(
-                                      'Veiw All',
+                                      'viewAll'.tr(),
                                       style: Theme.of(context)
                                           .textTheme
                                           .headlineLarge,
