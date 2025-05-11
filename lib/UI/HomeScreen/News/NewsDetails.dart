@@ -27,7 +27,7 @@ class _NewsDetailsState extends State<NewsDetails> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    final Uri url = Uri.parse(newsArgs.url!);
+    final Uri url = Uri.parse(newsArgs.url ?? '');
 
     return Scaffold(
       appBar: AppBar(
@@ -56,10 +56,14 @@ class _NewsDetailsState extends State<NewsDetails> {
               borderRadius: BorderRadius.circular(8),
               child: CachedNetworkImage(
                 imageUrl: newsArgs.urlToImage ?? '',
-                placeholder: (context, url) => CircularProgressIndicator(
-                  color: AppColors.darkGray,
+                placeholder: (context, url) => Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.darkGray,
+                  ),
                 ),
-                errorWidget: (context, url, error) => Icon(Icons.error),
+                errorWidget: (context, url, error) => Center(
+                  child: Icon(Icons.error),
+                ),
               ),
             ),
             SizedBox(height: height * .01),
@@ -76,7 +80,7 @@ class _NewsDetailsState extends State<NewsDetails> {
                 padding: EdgeInsets.symmetric(vertical: height * .02),
                 backgroundColor: Theme.of(context).secondaryHeaderColor,
               ),
-              onPressed: () => launchUrl(url),
+              onPressed: () => _launchUrl(url),
               child: Text(
                 'View Full Article',
                 style: Theme.of(context).textTheme.bodyLarge,
@@ -88,9 +92,11 @@ class _NewsDetailsState extends State<NewsDetails> {
     );
   }
 
-  Future<void> launchUrl(Uri url) async {
+  Future<void> _launchUrl(Uri url) async {
     if (!await launchUrl(url)) {
-      throw Exception('Could not launch $url');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not launch $url')),
+      );
     }
   }
 }
