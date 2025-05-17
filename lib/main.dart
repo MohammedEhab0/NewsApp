@@ -1,13 +1,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import 'Providers/SettingProvider.dart';
 import 'UI/HomeScreen/HomeScreen.dart';
 import 'UI/HomeScreen/News/NewsDetails.dart';
 import 'Utils/AppTheme.dart';
+import 'Utils/Cubit_bloc_observer.dart';
 
 void main() async {
+  Bloc.observer = MyBlocObserver();
   runApp(
     EasyLocalization(
       supportedLocales: [Locale('en'), Locale('ar')],

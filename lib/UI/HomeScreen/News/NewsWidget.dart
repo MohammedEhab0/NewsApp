@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news/Modal/SourceResponse.dart';
+import 'package:news/UI/HomeScreen/News/Cubit/CubitNewsViewModel.dart';
+import 'package:news/UI/HomeScreen/News/Cubit/NewsStates.dart';
 import 'package:news/UI/HomeScreen/News/NewsDetails.dart';
 import 'package:news/UI/HomeScreen/News/NewsItem.dart';
 import 'package:news/UI/HomeScreen/News/NewsViewModel.dart';
@@ -25,18 +28,26 @@ class _NewsWidgetState extends State<NewsWidget> {
     viewModel.getNews(widget.source.id!);
     super.initState();
   }
-  NewsViewModel viewModel = NewsViewModel();
+
+  // NewsViewModel viewModel = NewsViewModel();
+  CubitNewsViewModel viewModel = CubitNewsViewModel();
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (context) => viewModel,
-        child: Consumer<NewsViewModel>(builder: (context, viewModel, child) {
-          if (viewModel.errorMessage != null) {
+    return BlocBuilder<CubitNewsViewModel,NewsState>(
+        bloc: viewModel,
+        builder: (context, state) {
+          if (state is NewsLoadingState) {
+            return Center(
+                child: CircularProgressIndicator(
+              color: AppColors.darkGray,
+            ));
+          }
+          if (state is NewsErrorState) {
             return Column(
               children: [
                 Text(
-                  viewModel.errorMessage!,
+                  state.errorMessage,
                   style: AppStyle.medium20primaryDark,
                 ),
                 ElevatedButton(
@@ -51,89 +62,126 @@ class _NewsWidgetState extends State<NewsWidget> {
                     ))
               ],
             );
-          } else if (viewModel.newsList == null) {
-            return Center(
-                child: CircularProgressIndicator(
-              color: AppColors.darkGray,
-            ));
-          } else {
+          } else if (state is NewsSuccessState) {
             return ListView.builder(
-              itemCount: viewModel.newsList!.length,
+              itemCount: state.newsList.length,
               itemBuilder: (context, index) {
                 return InkWell(
                     onTap: () {
                       Navigator.pushNamed(context, NewsDetails.routeName,
-                          arguments: viewModel.newsList![index]);
+                          arguments: state.newsList[index]);
                     },
-                    child: NewsItem(news: viewModel.newsList![index]));
+                    child: NewsItem(news: state.newsList[index]));
               },
             );
           }
-        }
-
-            // FutureBuilder(
-            //     future: ApiManager.getNewsBySourceId(widget.source.id ?? ''),
-            //     builder: (context, snapshot) {
-            //       /// if it loading
-            //       if (snapshot.connectionState == ConnectionState.waiting) {
-            //         return Center(
-            //             child: CircularProgressIndicator(
-            //           color: AppColors.darkGray,
-            //         ));
-            //         // error clint : can not conecct to server
-            //       } else if (snapshot.hasError) {
-            //         return Column(
-            //           children: [
-            //             Text(
-            //               'something went ronge ',
-            //               style: AppStyle.medium20primaryDark,
-            //             ),
-            //             ElevatedButton(
-            //                 onPressed: () {
-            //                   ApiManager.getNewsBySourceId(widget.source.id ?? '');
-            //                   ;
-            //                   setState(() {});
-            //                 },
-            //                 child: Text(
-            //                   'try again ',
-            //                   style: AppStyle.medium20primaryDark,
-            //                 ))
-            //           ],
-            //         );
-            //       }
-            //       // error server : response error
-            //       if (snapshot.data?.status != 'ok') {
-            //         return Column(
-            //           children: [
-            //             Text(
-            //               snapshot.data!.message!,
-            //               style: AppStyle.medium20primaryDark,
-            //             ),
-            //             ElevatedButton(
-            //                 onPressed: () {
-            //                   ApiManager.getNewsBySourceId(widget.source.id ?? '');
-            //                   setState(() {});
-            //                 },
-            //                 child: Text(
-            //                   'try again ',
-            //                   style: AppStyle.medium20primaryDark,
-            //                 ))
-            //           ],
-            //         );
-            //       }
-            //       var newsList = snapshot.data?.articles ?? [];
-            //       return ListView.builder(
-            //         itemCount: newsList.length,
-            //         itemBuilder: (context, index) {
-            //           return InkWell(
-            //               onTap: () {
-            //                 Navigator.pushNamed(context, NewsDetails.routeName,
-            //                     arguments: newsList[index]);
-            //               },
-            //               child: NewsItem(news: newsList[index]));
-            //         },
-            //       );
-            //     }),
-            ));
+          return Container(); // un reachable
+        });
+    // ChangeNotifierProvider(
+    //   create: (context) => viewModel,
+    //   child: Consumer<NewsViewModel>(builder: (context, viewModel, child) {
+    //     if (viewModel.errorMessage != null) {
+    //       return Column(
+    //         children: [
+    //           Text(
+    //             viewModel.errorMessage!,
+    //             style: AppStyle.medium20primaryDark,
+    //           ),
+    //           ElevatedButton(
+    //               onPressed: () {
+    //                 viewModel.getNews(widget.source.id!);
+    //                 ;
+    //                 setState(() {});
+    //               },
+    //               child: Text(
+    //                 'try again ',
+    //                 style: AppStyle.medium20primaryDark,
+    //               ))
+    //         ],
+    //       );
+    //     } else if (viewModel.newsList == null) {
+    //       return Center(
+    //           child: CircularProgressIndicator(
+    //         color: AppColors.darkGray,
+    //       ));
+    //     } else {
+    //       return ListView.builder(
+    //         itemCount: viewModel.newsList!.length,
+    //         itemBuilder: (context, index) {
+    //           return InkWell(
+    //               onTap: () {
+    //                 Navigator.pushNamed(context, NewsDetails.routeName,
+    //                     arguments: viewModel.newsList![index]);
+    //               },
+    //               child: NewsItem(news: viewModel.newsList![index]));
+    //         },
+    //       );
+    //     }
+    //   }
+    //
+    //       // FutureBuilder(
+    //       //     future: ApiManager.getNewsBySourceId(widget.source.id ?? ''),
+    //       //     builder: (context, snapshot) {
+    //       //       /// if it loading
+    //       //       if (snapshot.connectionState == ConnectionState.waiting) {
+    //       //         return Center(
+    //       //             child: CircularProgressIndicator(
+    //       //           color: AppColors.darkGray,
+    //       //         ));
+    //       //         // error clint : can not conecct to server
+    //       //       } else if (snapshot.hasError) {
+    //       //         return Column(
+    //       //           children: [
+    //       //             Text(
+    //       //               'something went ronge ',
+    //       //               style: AppStyle.medium20primaryDark,
+    //       //             ),
+    //       //             ElevatedButton(
+    //       //                 onPressed: () {
+    //       //                   ApiManager.getNewsBySourceId(widget.source.id ?? '');
+    //       //                   ;
+    //       //                   setState(() {});
+    //       //                 },
+    //       //                 child: Text(
+    //       //                   'try again ',
+    //       //                   style: AppStyle.medium20primaryDark,
+    //       //                 ))
+    //       //           ],
+    //       //         );
+    //       //       }
+    //       //       // error server : response error
+    //       //       if (snapshot.data?.status != 'ok') {
+    //       //         return Column(
+    //       //           children: [
+    //       //             Text(
+    //       //               snapshot.data!.message!,
+    //       //               style: AppStyle.medium20primaryDark,
+    //       //             ),
+    //       //             ElevatedButton(
+    //       //                 onPressed: () {
+    //       //                   ApiManager.getNewsBySourceId(widget.source.id ?? '');
+    //       //                   setState(() {});
+    //       //                 },
+    //       //                 child: Text(
+    //       //                   'try again ',
+    //       //                   style: AppStyle.medium20primaryDark,
+    //       //                 ))
+    //       //           ],
+    //       //         );
+    //       //       }
+    //       //       var newsList = snapshot.data?.articles ?? [];
+    //       //       return ListView.builder(
+    //       //         itemCount: newsList.length,
+    //       //         itemBuilder: (context, index) {
+    //       //           return InkWell(
+    //       //               onTap: () {
+    //       //                 Navigator.pushNamed(context, NewsDetails.routeName,
+    //       //                     arguments: newsList[index]);
+    //       //               },
+    //       //               child: NewsItem(news: newsList[index]));
+    //       //         },
+    //       //       );
+    //       //     }),
+    //       ));
   }
 }
