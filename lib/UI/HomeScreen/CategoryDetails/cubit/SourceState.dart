@@ -10,6 +10,3 @@ abstract class SourceState{}
    List<Source>sourceList;
    SourceSuccessState({required this.sourceList});
  }
- class ChangeSourceSelectedIndex extends SourceState {
-
- }

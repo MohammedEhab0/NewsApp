@@ -6,7 +6,7 @@ import 'package:news/api/api_manager/api_manager.dart';
 import '../../News/Cubit/CubitNewsViewModel.dart';
 
 class CubitSourceViewModel extends Cubit<SourceState> {
-  int selectedIndex = 0;
+
 
   CubitSourceViewModel() : super(SourceLoadingState());
   CubitNewsViewModel viewModel = CubitNewsViewModel();
@@ -26,10 +26,4 @@ class CubitSourceViewModel extends Cubit<SourceState> {
     }
   }
 
-  changeSelectedIndex({ required int newIndex}) {
-    selectedIndex = newIndex;
-    emit(ChangeSourceSelectedIndex());
-
-
-  }
 }

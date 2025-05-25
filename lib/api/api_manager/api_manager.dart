@@ -19,9 +19,14 @@ class ApiManager {
     }
   }
 
-  static Future<NewsResponse?> getNewsBySourceId(String sourceId) async {
-    Uri url = Uri.https(ApiConstants.baseUrl, EndPoints.newsApi,
-        {'apiKey': ApiConstants.apiKey, 'sources': sourceId});
+  static Future<NewsResponse?> getNewsBySourceId(
+      String sourceId, String pageNum) async {
+    Uri url = Uri.https(ApiConstants.baseUrl, EndPoints.newsApi, {
+      'apiKey': ApiConstants.apiKey,
+      'sources': sourceId,
+      'page': pageNum,
+      'pageSize': '5'
+    });
     try {
       var response = await http.get(url);
       // convert from body string to body json by use jsonDecode then convert to object by SourceResponse.fromJson

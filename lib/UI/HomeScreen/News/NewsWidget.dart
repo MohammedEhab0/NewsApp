@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news/Modal/SourceResponse.dart';
+import 'package:news/UI/HomeScreen/CategoryDetails/cubit/SourceState.dart';
 import 'package:news/UI/HomeScreen/News/Cubit/CubitNewsViewModel.dart';
 import 'package:news/UI/HomeScreen/News/Cubit/NewsStates.dart';
 import 'package:news/UI/HomeScreen/News/NewsDetails.dart';
@@ -25,16 +26,30 @@ class _NewsWidgetState extends State<NewsWidget> {
   @override
   void initState() {
     // TODO: implement initState
-    viewModel.getNews(widget.source.id!);
+    viewModel.getNews(widget.source.id!,viewModel.selectedPageNumber);
+    scrollController.addListener(onScroll);
     super.initState();
   }
-
+final ScrollController scrollController=ScrollController();
+  onScroll(){
+    if(scrollController.position.pixels == scrollController.position.maxScrollExtent){
+      viewModel.updateNews(widget.source.id!,viewModel.selectedPageNumber);
+    }
+  }
+  @override
+  void dispose() {
+    scrollController.removeListener(onScroll);
+    scrollController.dispose();
+    // TODO: implement dispose
+    super.dispose();
+  }
   // NewsViewModel viewModel = NewsViewModel();
   CubitNewsViewModel viewModel = CubitNewsViewModel();
 
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CubitNewsViewModel,NewsState>(
+    return BlocBuilder<CubitNewsViewModel, NewsState>(
         bloc: viewModel,
         builder: (context, state) {
           if (state is NewsLoadingState) {
@@ -52,9 +67,7 @@ class _NewsWidgetState extends State<NewsWidget> {
                 ),
                 ElevatedButton(
                     onPressed: () {
-                      viewModel.getNews(widget.source.id!);
-                      ;
-                      setState(() {});
+                      viewModel.getNews(widget.source.id!,viewModel.selectedPageNumber);
                     },
                     child: Text(
                       'try again ',
@@ -63,16 +76,61 @@ class _NewsWidgetState extends State<NewsWidget> {
               ],
             );
           } else if (state is NewsSuccessState) {
-            return ListView.builder(
-              itemCount: state.newsList.length,
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(controller: scrollController,
+                    itemCount: state.newsList.length,
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(context, NewsDetails.routeName,
+                                arguments: state.newsList[index]);
+                          },
+                          child: NewsItem(news: state.newsList[index]));
+                    },
+                  ),
+                ),
+
+              ],
+            );
+          }
+          else if (state is UpdateNewsSuccessState) {
+            return Column(
+              children: [ Expanded(
+            child: ListView.builder(controller: scrollController,
+              itemCount: viewModel.newsList.length,
               itemBuilder: (context, index) {
                 return InkWell(
                     onTap: () {
                       Navigator.pushNamed(context, NewsDetails.routeName,
-                          arguments: state.newsList[index]);
+                          arguments:  viewModel.newsList[index]);
                     },
-                    child: NewsItem(news: state.newsList[index]));
+                    child: NewsItem(news:  viewModel.newsList[index]));
               },
+            ),
+          ),
+
+              ],
+            );
+          }
+          else if (state is ChangeSourceSelectedIndex) {
+            return Column(
+              children: [ Expanded(
+                child: ListView.builder(controller: scrollController,
+                  itemCount: viewModel.newsList.length,
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(context, NewsDetails.routeName,
+                              arguments:  viewModel.newsList[index]);
+                        },
+                        child: NewsItem(news:  viewModel.newsList[index]));
+                  },
+                ),
+              ),
+
+              ],
             );
           }
           return Container(); // un reachable

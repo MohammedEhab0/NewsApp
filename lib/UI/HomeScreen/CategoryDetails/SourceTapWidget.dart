@@ -4,6 +4,7 @@ import 'package:news/UI/HomeScreen/CategoryDetails/Source_tap_name.dart';
 import 'package:news/UI/HomeScreen/News/NewsWidget.dart';
 
 import '../../../Modal/SourceResponse.dart';
+import '../News/Cubit/CubitNewsViewModel.dart';
 import 'cubit/CubitSourceViewModel.dart';
 
 class SourceTapWidget extends StatefulWidget {
@@ -18,11 +19,15 @@ class SourceTapWidget extends StatefulWidget {
 
 class _SourceTapWidgetState extends State<SourceTapWidget> {
   CubitSourceViewModel viewModel = CubitSourceViewModel();
+  CubitNewsViewModel newsViewModel = CubitNewsViewModel();
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => viewModel,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<CubitSourceViewModel>(create: (context) => viewModel),
+        BlocProvider<CubitNewsViewModel>(create: (context) => newsViewModel)
+      ],
       child: DefaultTabController(
           length: widget.sources.length,
           child: Column(
@@ -33,17 +38,20 @@ class _SourceTapWidgetState extends State<SourceTapWidget> {
                   indicatorColor: Theme.of(context).secondaryHeaderColor,
                   isScrollable: true,
                   onTap: (index) {
-                    viewModel.changeSelectedIndex(newIndex: index);
+                    newsViewModel.changeSelectedIndex(
+                        newIndex: index,
+                        sourceId: widget.sources[index].id!,
+                        pageNum: '1');
                   },
                   tabs: widget.sources.map((source) {
                     return SourceTapName(
                         source: source,
-                        isSelected: viewModel.selectedIndex ==
+                        isSelected: newsViewModel.selectedIndex ==
                             widget.sources.indexOf(source));
                   }).toList()),
               Expanded(
                   child: NewsWidget(
-                      source: widget.sources[viewModel.selectedIndex]))
+                      source: widget.sources[newsViewModel.selectedIndex]))
             ],
           )),
     );

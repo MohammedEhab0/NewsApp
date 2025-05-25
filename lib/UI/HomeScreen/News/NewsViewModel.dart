@@ -7,12 +7,12 @@ class NewsViewModel extends ChangeNotifier{
   String? errorMessage;
   List<News>? newsList ;
 
-  void getNews(String sourceId)async{
+  void getNews(String sourceId,String pageNum)async{
     errorMessage=null;
     newsList=null;
     notifyListeners();
     try{
-      var response=await ApiManager.getNewsBySourceId(sourceId);
+      var response=await ApiManager.getNewsBySourceId(sourceId,pageNum);
       if(response?.status == 'error'){
         errorMessage = response!.message;
       }else{
