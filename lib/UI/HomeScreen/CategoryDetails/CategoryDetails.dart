@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news/Dip/Dip.dart';
 import 'package:news/Modal/Category.dart';
 import 'package:news/Modal/SourceResponse.dart';
 import 'package:news/UI/HomeScreen/CategoryDetails/SourceTapWidget.dart';
@@ -27,9 +28,15 @@ class _CategoryDetailsState extends State<CategoryDetails> {
     viewModel.getSources(widget.category.id);
     super.initState();
   }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    viewModel.getSources(widget.category.id);
+  }
+
 
   // SourceViewModel viewModel = SourceViewModel();
-  CubitSourceViewModel viewModel = CubitSourceViewModel();
+  CubitSourceViewModel viewModel = CubitSourceViewModel(sourceRepository: injectSourceRepository());
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +69,7 @@ class _CategoryDetailsState extends State<CategoryDetails> {
             );
           } else if (state is SourceSuccessState) {
             return SourceTapWidget(
-              sources: state.sourceList, categoryId: widget.category.id,
+              sources: state.sourceList,
             );
           }
           return Container(); // unreachable

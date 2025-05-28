@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news/Dip/Dip.dart';
 import 'package:news/Modal/SourceResponse.dart';
 import 'package:news/UI/HomeScreen/CategoryDetails/cubit/SourceState.dart';
 import 'package:news/UI/HomeScreen/News/Cubit/CubitNewsViewModel.dart';
@@ -23,118 +24,95 @@ class NewsWidget extends StatefulWidget {
 }
 
 class _NewsWidgetState extends State<NewsWidget> {
+  final ScrollController scrollController = ScrollController();
+  CubitNewsViewModel viewModel = CubitNewsViewModel(newsRepository: injectNewsRepository());
+
   @override
   void initState() {
-    // TODO: implement initState
-    viewModel.getNews(widget.source.id!,viewModel.selectedPageNumber);
-    scrollController.addListener(onScroll);
     super.initState();
+    viewModel.getNews(widget.source.id!, viewModel.selectedPageNumber);
+    scrollController.addListener(onScroll);
   }
-final ScrollController scrollController=ScrollController();
-  onScroll(){
-    if(scrollController.position.pixels == scrollController.position.maxScrollExtent){
-      viewModel.updateNews(widget.source.id!,viewModel.selectedPageNumber);
+
+  @override
+  void didUpdateWidget(NewsWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Check if the source has changed
+    if (oldWidget.source.id != widget.source.id) {
+      // Call getNews with the new source id
+      viewModel.getNews(widget.source.id!, viewModel.selectedPageNumber);
     }
   }
+
   @override
   void dispose() {
     scrollController.removeListener(onScroll);
     scrollController.dispose();
-    // TODO: implement dispose
     super.dispose();
   }
-  // NewsViewModel viewModel = NewsViewModel();
-  CubitNewsViewModel viewModel = CubitNewsViewModel();
 
+  void onScroll() {
+    if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
+      viewModel.updateNews(widget.source.id!, viewModel.selectedPageNumber);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CubitNewsViewModel, NewsState>(
-        bloc: viewModel,
-        builder: (context, state) {
-          if (state is NewsLoadingState) {
-            return Center(
-                child: CircularProgressIndicator(
+      bloc: viewModel,
+      builder: (context, state) {
+        if (state is NewsLoadingState) {
+          return Center(
+            child: CircularProgressIndicator(
               color: AppColors.darkGray,
-            ));
-          }
-          if (state is NewsErrorState) {
-            return Column(
-              children: [
-                Text(
-                  state.errorMessage,
+            ),
+          );
+        }
+        if (state is NewsErrorState) {
+          return Column(
+            children: [
+              Text(
+                state.errorMessage,
+                style: AppStyle.medium20primaryDark,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  viewModel.getNews(widget.source.id!, viewModel.selectedPageNumber);
+                },
+                child: Text(
+                  'Try Again',
                   style: AppStyle.medium20primaryDark,
                 ),
-                ElevatedButton(
-                    onPressed: () {
-                      viewModel.getNews(widget.source.id!,viewModel.selectedPageNumber);
-                    },
-                    child: Text(
-                      'try again ',
-                      style: AppStyle.medium20primaryDark,
-                    ))
-              ],
-            );
-          } else if (state is NewsSuccessState) {
-            return Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(controller: scrollController,
-                    itemCount: state.newsList.length,
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(context, NewsDetails.routeName,
-                                arguments: state.newsList[index]);
-                          },
-                          child: NewsItem(news: state.newsList[index]));
-                    },
-                  ),
-                ),
-
-              ],
-            );
-          }
-          else if (state is UpdateNewsSuccessState) {
-            return Column(
-              children: [ Expanded(
-            child: ListView.builder(controller: scrollController,
-              itemCount: viewModel.newsList.length,
-              itemBuilder: (context, index) {
-                return InkWell(
-                    onTap: () {
-                      Navigator.pushNamed(context, NewsDetails.routeName,
-                          arguments:  viewModel.newsList[index]);
-                    },
-                    child: NewsItem(news:  viewModel.newsList[index]));
-              },
-            ),
-          ),
-
-              ],
-            );
-          }
-          else if (state is ChangeSourceSelectedIndex) {
-            return Column(
-              children: [ Expanded(
-                child: ListView.builder(controller: scrollController,
+              ),
+            ],
+          );
+        } else if (state is NewsSuccessState) {
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
                   itemCount: viewModel.newsList.length,
                   itemBuilder: (context, index) {
                     return InkWell(
-                        onTap: () {
-                          Navigator.pushNamed(context, NewsDetails.routeName,
-                              arguments:  viewModel.newsList[index]);
-                        },
-                        child: NewsItem(news:  viewModel.newsList[index]));
+                      onTap: () {
+                        Navigator.pushNamed(context, NewsDetails.routeName,
+                            arguments: viewModel.newsList[index]);
+                      },
+                      child: NewsItem(news: viewModel.newsList[index]),
+                    );
                   },
                 ),
               ),
-
-              ],
-            );
-          }
-          return Container(); // un reachable
-        });
+            ],
+          );
+        }
+        return Container(); // unreachable
+      },
+    );
+  }
+}
     // ChangeNotifierProvider(
     //   create: (context) => viewModel,
     //   child: Consumer<NewsViewModel>(builder: (context, viewModel, child) {
@@ -241,5 +219,4 @@ final ScrollController scrollController=ScrollController();
     //       //       );
     //       //     }),
     //       ));
-  }
-}
+
