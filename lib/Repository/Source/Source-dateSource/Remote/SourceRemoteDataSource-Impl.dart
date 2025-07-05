@@ -1,5 +1,5 @@
 import 'package:news/Modal/SourceResponse.dart';
-import 'package:news/Repository/Source/Source-dateSource/SourceRemoteDataSource.dart';
+import 'package:news/Repository/Source/Source-dateSource/Remote/SourceRemoteDataSource.dart';
 import 'package:news/api/api_manager/api_manager.dart';
 
 class SourceRemoteDataSourceImpl implements SourceRemoteDataSource{

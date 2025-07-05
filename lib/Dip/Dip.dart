@@ -2,8 +2,8 @@ import 'package:news/Repository/News/NewsRemoteDataSource/NewsRemoteDataSource.d
 import 'package:news/Repository/News/NewsRepository/NewsRepository.dart';
 import 'package:news/Repository/Source/Source-Repository/SourceRepository-Impl.dart';
 import 'package:news/Repository/Source/Source-Repository/SourceRepository.dart';
-import 'package:news/Repository/Source/Source-dateSource/SourceRemoteDataSource-Impl.dart';
-import 'package:news/Repository/Source/Source-dateSource/SourceRemoteDataSource.dart';
+import 'package:news/Repository/Source/Source-dateSource/Remote/SourceRemoteDataSource-Impl.dart';
+import 'package:news/Repository/Source/Source-dateSource/Remote/SourceRemoteDataSource.dart';
 import 'package:news/api/api_manager/api_manager.dart';
 
 import '../Repository/News/NewsRemoteDataSource/NewsRemoteDataSource-Impl.dart';

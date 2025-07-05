@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news/Repository/Source/Source-Repository/SourceRepository-Impl.dart';
-import 'package:news/Repository/Source/Source-dateSource/SourceRemoteDataSource-Impl.dart';
+import 'package:news/Repository/Source/Source-dateSource/Remote/SourceRemoteDataSource-Impl.dart';
 import 'package:news/UI/HomeScreen/CategoryDetails/cubit/SourceState.dart';
 import 'package:news/api/api_manager/api_manager.dart';
 
 import '../../../../Repository/Source/Source-Repository/SourceRepository.dart';
-import '../../../../Repository/Source/Source-dateSource/SourceRemoteDataSource.dart';
+import '../../../../Repository/Source/Source-dateSource/Remote/SourceRemoteDataSource.dart';
 import '../../News/Cubit/CubitNewsViewModel.dart';
 
 class CubitSourceViewModel extends Cubit<SourceState> {
